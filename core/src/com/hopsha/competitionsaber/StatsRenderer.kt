@@ -1,6 +1,5 @@
 package com.hopsha.competitionsaber
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -269,6 +268,6 @@ private val COLOR_BACKGROUND = Color.DARK_GRAY
 private val COLOR_BUTTON_PRESSED = Color.BLACK
 private const val RADIUS_CIRCLE = 10f
 private const val HEIGHT_TABLE_LINE = 50f
-private const val HEIGHT_BUTTON = 60f
+private const val HEIGHT_BUTTON = 30f
 private const val INDENT_HORIZONTAL = 20f
 private const val WIDTH_SCORE = 40f

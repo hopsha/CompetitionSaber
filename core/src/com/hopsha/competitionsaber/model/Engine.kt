@@ -12,6 +12,7 @@ import com.hopsha.competitionsaber.model.entity.Wall
 import com.hopsha.competitionsaber.model.entity.ownedBy
 import com.hopsha.competitionsaber.model.entity.player.Player
 import com.hopsha.competitionsaber.model.shape.*
+import kotlinx.coroutines.*
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.system.measureTimeMillis
@@ -25,23 +26,34 @@ class Engine(
     private val onKill: () -> Unit = {}
 ) {
 
+    private val scope = CoroutineScope(Dispatchers.Default)
+
     private val Stage.alivePlayerNumber: Int
         get() = entities
             .filterIsInstance<Player>()
             .filter { it.isAlive }
             .count()
 
-    fun refresh(input: Input) = measureTimeMillis {
+    fun refresh(input: Input) = runBlocking {
         //val testPlayer = stage.getEntity<Player>("player1")
         //stage.debugVision = createVision(testPlayer)
 
         stage.entities
             .filterIsInstance<Player>()
             .filter { player -> player.isAlive }
-            .associateWith { player -> player.controller.decide(createVision(player), input, player.createState()) }
+            .map { player -> scope.async {
+                val startTime = System.currentTimeMillis()
+                val result = player to player.controller.decide(createVision(player), input, player.createState())
+                val duration = System.currentTimeMillis() - startTime
+                if (duration > 10L) {
+                    println("Warning! Decision took $duration for ${player.id}")
+                }
+                result
+            } }
+            .awaitAll()
             .forEach { pair ->
-                val player = pair.key
-                val action = pair.value
+                val player = pair.first
+                val action = pair.second
                 player.handle(action)
 
                 refreshAttacked(player)
@@ -97,6 +109,8 @@ class Engine(
     private fun refreshAttacked(player: Player) {
         val attackingSaber = getAttackingSaber(player)
         if (attackingSaber != null && !effectRegistry.has(player, Effect.INVULNERABILITY)) {
+            println("${player.id} attacked by ${attackingSaber.ownerId}")
+
             val wasAlive = player.isAlive
 
             player.hitPoints--
@@ -273,14 +287,6 @@ class Engine(
             is StraightSegment -> bounds
             else -> throw NotImplementedError("No support for ${this.javaClass}")
         }
-    }
-
-    private fun Shape.isDebugging(): Boolean {
-        return this is StraightSegment
-    }
-
-    private fun Player.isDebugging(): Boolean {
-        return id == "player1"
     }
 
     data class Input(

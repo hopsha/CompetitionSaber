@@ -13,6 +13,7 @@ object DesktopLauncher {
             width = 1000
             height = 480
             samples = 3
+            foregroundFPS = 60
         }
         LwjglApplication(CompetitionSaber(), config)
     }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.ScreenUtils
 import com.hopsha.competitionsaber.model.*
 import com.hopsha.competitionsaber.model.entity.player.Player
+import kotlin.system.measureTimeMillis
 
 class CompetitionSaber : ApplicationAdapter() {
     private var camera: OrthographicCamera? = null

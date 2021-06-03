@@ -5,11 +5,11 @@ import com.hopsha.competitionsaber.model.Engine
 import com.hopsha.competitionsaber.model.entity.Saber
 import kotlin.random.Random
 
-class AutoPlayerController : PlayerController {
+open class AutoPlayerController : PlayerController {
 
     private val isLeftAligned = Random.nextBoolean()
 
-    override fun decide(vision: Vision, input: Engine.Input, state: PlayerState): Action {
+    override suspend fun decide(vision: Vision, input: Engine.Input, state: PlayerState): Action {
         val closestPlayer = vision.findClosestPlayer()
         val largestFreeRange = vision.freeRanges
             .maxByOrNull { it.width }

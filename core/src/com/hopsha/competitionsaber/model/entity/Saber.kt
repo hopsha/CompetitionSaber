@@ -13,7 +13,7 @@ class Saber(
     val ownerId: String
 ) : DynamicEntity {
 
-    var isArmed = true
+    var isArmed = false
 
     override var x: Float = 0f
     override var y: Float = 0f

@@ -1,7 +1,5 @@
 package com.hopsha.competitionsaber.model.entity
 
-import com.badlogic.gdx.utils.Array
-import com.hopsha.competitionsaber.model.shape.Circle
 import com.hopsha.competitionsaber.model.shape.Rectangle
 import com.hopsha.competitionsaber.model.shape.Shape
 
@@ -35,8 +33,8 @@ class Wall(
             width: Float,
             height: Float,
             depth: Float
-        ): Array<Wall> {
-            return Array.with(
+        ): List<Wall> {
+            return listOf(
                 Wall("${baseId}_top", startX, startY, width, depth),
                 Wall("${baseId}_bottom", startX, height - depth, width, depth),
                 Wall("${baseId}_left", startX, startY, depth, height),

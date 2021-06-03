@@ -1,6 +1,5 @@
 package com.hopsha.competitionsaber.model
 
-import com.badlogic.gdx.utils.Array
 import com.hopsha.competitionsaber.model.controller.Vision
 import com.hopsha.competitionsaber.model.entity.Entity
 
@@ -10,7 +9,7 @@ class Stage(
 ) {
 
     var debugVision: Vision? = null
-    val entities = Array<Entity>()
+    val entities = mutableListOf<Entity>()
 
     inline fun <reified T : Entity> getEntity(id: String): T {
         val entity = entities.first { entity ->
@@ -23,7 +22,7 @@ class Stage(
         entities.add(entity)
     }
 
-    fun addEntities(entities: Array<out Entity>) {
+    fun addEntities(entities: List<Entity>) {
         this.entities.addAll(entities)
     }
 }

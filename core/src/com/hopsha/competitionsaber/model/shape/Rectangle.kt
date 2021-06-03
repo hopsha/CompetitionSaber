@@ -1,6 +1,5 @@
 package com.hopsha.competitionsaber.model.shape
 
-import com.badlogic.gdx.utils.Array
 import com.hopsha.competitionsaber.growingRange
 import com.hopsha.competitionsaber.model.findCollisions
 
@@ -15,8 +14,8 @@ data class Rectangle(
     val xEnd = xStart + width
     val yEnd = yStart + height
 
-    val perimeter: Array<StraightSegment> by lazy {
-        Array.with(
+    val perimeter: List<StraightSegment> by lazy {
+        listOf(
             StraightSegment(xStart, yStart, xEnd, yStart),
             StraightSegment(xStart, yEnd, xEnd, yEnd),
             StraightSegment(xStart, yStart, xStart, yEnd),
