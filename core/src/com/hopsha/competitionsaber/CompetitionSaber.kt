@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -27,6 +28,7 @@ class CompetitionSaber : ApplicationAdapter() {
     private var saberSound: Sound? = null
     private var kickSound: Sound? = null
     private var deathSound: Sound? = null
+    private var music: Music? = null
     private val timer: Timer = Timer(60)
     private var isRunning = false
 
@@ -59,10 +61,12 @@ class CompetitionSaber : ApplicationAdapter() {
             scoreRegistry!!,
             onChaos = { engine?.turnAlivePlayersRandomly() },
             onStart = {
+                music?.play()
                 timer.start()
                 isRunning = true
             },
             onStop = {
+                music?.pause()
                 timer.pause()
                 isRunning = false
             }
@@ -72,6 +76,9 @@ class CompetitionSaber : ApplicationAdapter() {
         saberSound = Gdx.audio.newSound(Gdx.files.internal("saber_sound.mp3"))
         kickSound = Gdx.audio.newSound(Gdx.files.internal("kick.mp3"))
         deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"))
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3")).apply {
+            isLooping = true
+        }
     }
 
     override fun render() {
@@ -120,6 +127,7 @@ class CompetitionSaber : ApplicationAdapter() {
         timer.cancel()
         isRunning = false
         batch?.dispose()
+        music?.dispose()
         saberSound?.dispose()
         kickSound?.dispose()
         deathSound?.dispose()
