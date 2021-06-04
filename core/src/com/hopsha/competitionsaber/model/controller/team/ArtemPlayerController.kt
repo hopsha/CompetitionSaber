@@ -12,26 +12,23 @@ class ArtemPlayerController : PlayerController {
 
     override suspend fun decide(vision: Vision, input: Engine.Input, state: PlayerState): Action {
         val players = vision.items.filter { it.info is Vision.Info.Player }
-        val closestPlayer = vision.findClosestPlayer()
         val largestFreeRange = vision.freeRanges
             .maxByOrNull { it.width }
         val closestItem = vision.items.minByOrNull { it.distance }
         val closestDistance = closestItem?.distance ?: Float.MAX_VALUE
 
         return when {
-            shouldRandomlyTurnLeft() -> Action.TURN_LEFT
-            shouldRandomlyTurnRight() -> Action.TURN_RIGHT
-            largestFreeRange == null -> turnAlignedSide()
-
             players.isNotEmpty() -> {
-                val closestPlayer = players.filter { !(it.info as Vision.Info.Player).isInvulnerable }
+                val closestVulnerablePlayer = players.filter { !(it.info as Vision.Info.Player).isInvulnerable }
                     .minByOrNull { it.distance }
 
-                if (!state.isAttacking && !state.isDisarmed && closestPlayer != null) {
-                    val closestPlayerCenter = closestPlayer.angleRange.center
+                if ((!state.isDisarmed || state.isAttacking) && closestVulnerablePlayer != null) {
+                    val closestPlayerCenter = closestVulnerablePlayer.angleRange.center
                     when {
-                        !state.isAttacking && closestPlayer.distance < Saber.LENGTH -> Action.ATTACK
-                        closestPlayer.angleRange.contains(0.degrees) -> Action.MOVE_FORWARD
+                        !state.isAttacking
+                                && closestVulnerablePlayer.distance < Saber.LENGTH - PLAYER_RADIUS / 4f
+                                && closestVulnerablePlayer.angleRange.contains(0.degrees) -> Action.ATTACK
+                        closestVulnerablePlayer.angleRange.contains(0.degrees) -> Action.MOVE_FORWARD
                         closestPlayerCenter.degrees < 0 -> Action.TURN_RIGHT
                         closestPlayerCenter.degrees > 0 -> Action.TURN_LEFT
                         else -> Action.MOVE_FORWARD
@@ -40,6 +37,10 @@ class ArtemPlayerController : PlayerController {
                     Action.MOVE_BACKWARD
                 }
             }
+
+            shouldRandomlyTurnLeft() -> Action.TURN_LEFT
+            shouldRandomlyTurnRight() -> Action.TURN_RIGHT
+            largestFreeRange == null -> turnAlignedSide()
 
             largestFreeRange.width.degrees < 20 -> turnAlignedSide()
             largestFreeRange.center.degrees > 10 -> Action.TURN_LEFT
