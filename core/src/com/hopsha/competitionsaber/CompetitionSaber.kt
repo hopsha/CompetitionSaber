@@ -73,12 +73,12 @@ class CompetitionSaber : ApplicationAdapter() {
         )
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT or if (Gdx.graphics.bufferFormat.coverageSampling) GL20.GL_COVERAGE_BUFFER_BIT_NV else 0)
 
-        saberSound = Gdx.audio.newSound(Gdx.files.internal("saber_sound.mp3"))
-        kickSound = Gdx.audio.newSound(Gdx.files.internal("kick.mp3"))
-        deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"))
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3")).apply {
-            isLooping = true
-        }
+//        saberSound = Gdx.audio.newSound(Gdx.files.internal("saber_sound.mp3"))
+//        kickSound = Gdx.audio.newSound(Gdx.files.internal("kick.mp3"))
+//        deathSound = Gdx.audio.newSound(Gdx.files.internal("death.mp3"))
+//        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3")).apply {
+//            isLooping = true
+//        }
     }
 
     override fun render() {
