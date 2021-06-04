@@ -14,8 +14,6 @@ class ArtemPlayerController : PlayerController {
         val players = vision.items.filter { it.info is Vision.Info.Player }
         val largestFreeRange = vision.freeRanges
             .maxByOrNull { it.width }
-        val closestItem = vision.items.minByOrNull { it.distance }
-        val closestDistance = closestItem?.distance ?: Float.MAX_VALUE
 
         return when {
             players.isNotEmpty() -> {
@@ -26,7 +24,7 @@ class ArtemPlayerController : PlayerController {
                     val closestPlayerCenter = closestVulnerablePlayer.angleRange.center
                     when {
                         !state.isAttacking
-                                && closestVulnerablePlayer.distance < Saber.LENGTH - PLAYER_RADIUS / 4f
+                                && closestVulnerablePlayer.distance < Saber.LENGTH
                                 && closestVulnerablePlayer.angleRange.contains(0.degrees) -> Action.ATTACK
                         closestVulnerablePlayer.angleRange.contains(0.degrees) -> Action.MOVE_FORWARD
                         closestPlayerCenter.degrees < 0 -> Action.TURN_RIGHT
@@ -38,8 +36,6 @@ class ArtemPlayerController : PlayerController {
                 }
             }
 
-            shouldRandomlyTurnLeft() -> Action.TURN_LEFT
-            shouldRandomlyTurnRight() -> Action.TURN_RIGHT
             largestFreeRange == null -> turnAlignedSide()
 
             largestFreeRange.width.degrees < 20 -> turnAlignedSide()
