@@ -9,7 +9,16 @@ import kotlin.random.Random
 class AlexPlayerController : PlayerController{
 
     private val isLeftAligned = Random.nextBoolean()
-    private var countStepBack = 500
+    private var countStepBack = 1000
+
+    private var stepSometimesForvard = 2000
+    private var stepSometimesForvardTIME = 100
+    private fun clearflags(){
+        stepSometimesForvard = 2000
+        stepSometimesForvardTIME = 100
+    }
+
+
 
     override suspend fun decide(vision: Vision, input: Engine.Input, state: PlayerState): Action {
         val closestPlayer = vision.findClosestPlayer()
@@ -20,12 +29,22 @@ class AlexPlayerController : PlayerController{
         if(closestPlayer==null){
             countStepBack = 1000
         }
+        stepSometimesForvard --
+        if(stepSometimesForvardTIME<=0){
+            clearflags()
+        }
         return when {
+            stepSometimesForvard <= 0 &&  stepSometimesForvardTIME>0-> {
+                stepSometimesForvardTIME--
+                return Action.MOVE_FORWARD}
+
             vision.items.isEmpty() -> Action.MOVE_BACKWARD
             shouldRandomlyTurnLeft() -> Action.TURN_LEFT
             shouldRandomlyTurnRight() -> Action.TURN_RIGHT
 
             closestPlayer != null -> {
+                clearflags()
+
                 val closestPlayerCenter = closestPlayer.angleRange.center
                 when {
                     state.isAttacking && countStepBack > 0 -> {
