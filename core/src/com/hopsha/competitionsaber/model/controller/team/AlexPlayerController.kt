@@ -9,6 +9,7 @@ import kotlin.random.Random
 class AlexPlayerController : PlayerController{
 
     private val isLeftAligned = Random.nextBoolean()
+    private var countStepBack = 500
 
     override suspend fun decide(vision: Vision, input: Engine.Input, state: PlayerState): Action {
         val closestPlayer = vision.findClosestPlayer()
@@ -16,16 +17,21 @@ class AlexPlayerController : PlayerController{
                 .maxByOrNull { it.width }
         val closestItem = vision.items.minByOrNull { it.distance }
         val closestDistance = closestItem?.distance ?: Float.MAX_VALUE
-
+        if(closestPlayer==null){
+            countStepBack = 1000
+        }
         return when {
             vision.items.isEmpty() -> Action.MOVE_BACKWARD
             shouldRandomlyTurnLeft() -> Action.TURN_LEFT
             shouldRandomlyTurnRight() -> Action.TURN_RIGHT
-            largestFreeRange == null -> turnAlignedSide()
 
             closestPlayer != null -> {
                 val closestPlayerCenter = closestPlayer.angleRange.center
                 when {
+                    state.isAttacking && countStepBack > 0 -> {
+                        countStepBack--
+                        Action.MOVE_BACKWARD
+                        }
                     !state.isAttacking && closestPlayer.distance < Saber.LENGTH -> Action.ATTACK
                     closestPlayer.angleRange.contains(0.degrees) -> Action.MOVE_FORWARD
                     closestPlayerCenter.degrees < 0 -> Action.TURN_RIGHT
@@ -33,6 +39,7 @@ class AlexPlayerController : PlayerController{
                     else -> Action.MOVE_BACKWARD
                 }
             }
+            largestFreeRange == null -> turnAlignedSide()
             largestFreeRange.width.degrees < 88 -> turnAlignedSide()
             largestFreeRange.center.degrees > 10 -> Action.TURN_LEFT
             largestFreeRange.center.degrees < -10 -> Action.TURN_RIGHT
